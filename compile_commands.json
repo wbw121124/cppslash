@@ -1,22 +1,24 @@
 [
-	{
-		"directory": "C:/Users/yl/Downloads/files",
-		"arguments": [
-			"c:\\Program Files\\mingw64\\bin\\g++.exe",
-			"-std=c++17",
-			"-I",
-			"C:\\Program Files\\mingw64\\include",
-			"-I",
-			"C:\\Program Files\\mingw64\\lib\\gcc\\x86_64-w64-mingw32\\8.1.0\\include\\c++",
-			"-I",
-			"C:\\Program Files\\mingw64\\lib\\gcc\\x86_64-w64-mingw32\\8.1.0\\include\\c++\\x86_64-w64-mingw32",
-			"-I",
-			"C:\\Program Files\\mingw64\\lib\\gcc\\x86_64-w64-mingw32\\8.1.0\\include\\c++\\x86_64-w64-mingw32\\include",
-			"-c",
-			"example/example.cpp",
-			"-o",
-			"example.o"
-		],
-		"file": "example/example.cpp"
-	}
+    {
+        "directory": "C:/Users/yl/Downloads/files",
+        "arguments": [
+            "c:\\Program Files\\mingw64\\bin\\g++.exe",
+            "-std=c++17",
+            "-I",
+            "C:\\Program Files\\mingw64\\include",
+            "-I",
+            "-I",
+            "C:\\Program Files\\mingw64\\lib\\gcc\\x86_64-w64-mingw32\\8.1.0\\include\\c++\\x86_64-w64-mingw32",
+            "C:\\Program Files\\mingw64\\lib\\gcc\\x86_64-w64-mingw32\\8.1.0\\include\\c++",
+            "-I",
+            "C:\\Program Files\\mingw64\\lib\\gcc\\x86_64-w64-mingw32\\8.1.0\\include\\c++\\x86_64-w64-mingw32",
+            "-I",
+            "C:\\Program Files\\mingw64\\lib\\gcc\\x86_64-w64-mingw32\\8.1.0\\include\\c++\\x86_64-w64-mingw32\\include",
+            "-c",
+            "example/example.cpp",
+            "-o",
+            "example.o"
+        ],
+        "file": "example/example.cpp"
+    }
 ]
