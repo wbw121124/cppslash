@@ -1,5 +1,4 @@
 name=.gitignore
 node_modules
 dist
-out.html
 .vscode
