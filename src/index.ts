@@ -15,7 +15,7 @@ function fileToUri(fileName: string) {
   return 'file:///' + fileName;
 }
 
-// parse markers like `// ^?` — we treat the marker as hovering at previous token position
+// 更稳的 marker 解析：把注释前最近的非空白字符位置作为 hover 目标
 function parseHoverMarkers(code: string) {
   const lines = code.split(/\r?\n/);
   const markers: { line: number; column: number }[] = [];
@@ -23,8 +23,11 @@ function parseHoverMarkers(code: string) {
     const ln = lines[i];
     const idx = ln.indexOf('// ^?');
     if (idx !== -1) {
-      // position = index of token before comment. We'll pick column = idx (0-based)
-      markers.push({ line: i, column: Math.max(0, idx - 1) });
+      // 在注释前向左找最后一个非空白字符
+      let col = idx - 1;
+      while (col > 0 && /\s/.test(ln[col])) col--;
+      if (col < 0) col = 0;
+      markers.push({ line: i, column: col });
     }
   }
   return markers;
@@ -58,23 +61,27 @@ export async function render(code: string, options: RenderOptions = {}) {
   const markers = parseHoverMarkers(code);
   const hovers: HoverResult[] = [];
 
+  function hoverContentsToString(contents: any): string {
+    if (!contents) return '';
+    if (typeof contents === 'string') return contents;
+    if (Array.isArray(contents)) return contents.map(c => hoverContentsToString(c)).filter(Boolean).join('\n\n');
+    if (typeof contents === 'object') {
+      if ('kind' in contents && 'value' in contents) return String(contents.value); // MarkupContent
+      if ('language' in contents && 'value' in contents) {
+        return '```' + (contents.language || '') + '\n' + contents.value + '\n```';
+      }
+      if ('value' in contents) return String(contents.value);
+    }
+    try { return JSON.stringify(contents, null, 2); } catch { return String(contents); }
+  }
+
   for (const m of markers) {
     try {
       // clangd expects 0-based positions
       const hover = await client.hover(uri, { line: m.line, character: m.column });
       let content = '';
-      if (hover) {
-        if (hover.contents) {
-          if (Array.isArray(hover.contents)) {
-            content = hover.contents.map((c: any) => (typeof c === 'string' ? c : c.value || '')).join('\n\n');
-          } else if (typeof hover.contents === 'string') {
-            content = hover.contents;
-          } else if (hover.contents.kind === 'markdown') {
-            content = hover.contents.value;
-          } else {
-            content = JSON.stringify(hover.contents);
-          }
-        }
+      if (hover && hover.contents) {
+        content = hoverContentsToString(hover.contents);
       }
       hovers.push({ line: m.line, column: m.column, content });
     } catch (e) {

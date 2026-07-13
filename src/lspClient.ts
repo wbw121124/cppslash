@@ -39,7 +39,8 @@ export class ClangdClient {
   }
 
   async start(rootUri?: string): Promise<InitializeResult> {
-    this.process = spawn(this.clangdPath, ['--background-index=false'], { stdio: 'pipe' });
+    // spawn clangd with extra args so it picks up compile_commands.json and logs stderr
+    this.process = spawn(this.clangdPath, ['--background-index=false', '--compile-commands-dir=.', '--log=verbose'], { stdio: 'pipe' });
 
     if (!this.process.stdout || !this.process.stdin) {
       throw new Error('Failed to spawn clangd with stdio pipes');
@@ -115,7 +116,7 @@ export class ClangdClient {
     if (!this.connection) return;
     try {
       this.connection.dispose();
-    } catch {}
+    } catch { }
     if (this.process) {
       this.process.kill();
     }

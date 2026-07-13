@@ -13,16 +13,24 @@
     "start": "node dist/cli.js",
     "lint": "echo \"No linter configured\""
   },
-  "keywords": ["shiki","clangd","twoslash","c++","c","lsp","syntax-highlighting"],
+  "keywords": [
+    "shiki",
+    "clangd",
+    "twoslash",
+    "c++",
+    "c",
+    "lsp",
+    "syntax-highlighting"
+  ],
   "author": "",
   "license": "MIT",
   "dependencies": {
     "shiki": "^0.12.0",
-    "vscode-jsonrpc": "^7.0.0",
-    "vscode-languageserver-protocol": "^5.0.0"
+    "vscode-jsonrpc": "^9.0.1",
+    "vscode-languageserver-protocol": "^3.18.2"
   },
   "devDependencies": {
-    "typescript": "^5.0.0",
-    "@types/node": "^20.0.0"
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0"
   }
 }
