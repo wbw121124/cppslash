@@ -1,7 +1,7 @@
 [
 	{
 		"directory": "C:/Users/yl/Downloads/files",
-		"command": "g++ -std=c++17 -I C:/msys64/mingw64/include -c example/example.cpp -o example.o",
+		"command": "c:\\Program Files\\mingw64\\bin\\g++.exe -std=c++17 -I C:\\Program Files\\mingw64\\include -c example/example.cpp -o example.o",
 		"file": "example/example.cpp"
 	}
 ]

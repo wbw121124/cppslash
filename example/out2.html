@@ -1,0 +1,23 @@
+<div class="cppslash-wrapper">
+<pre class="shiki nord" style="background-color: #2e3440ff"><code><span class="line"><span style="color: #5E81AC; font-weight: bold">#</span><span style="color: #81A1C1">include</span><span style="color: #5E81AC"> </span><span style="color: #ECEFF4">&lt;</span><span style="color: #A3BE8C">iostream</span><span style="color: #ECEFF4">&gt;</span></span>
+<span class="line"></span>
+<span class="line"><span style="color: #81A1C1">int</span><span style="color: #D8DEE9FF"> </span><span style="color: #88C0D0">main</span><span style="color: #ECEFF4">()</span></span>
+<span class="line"><span style="color: #ECEFF4">{</span></span>
+<span class="line"><span style="color: #D8DEE9FF">  </span><span style="color: #81A1C1">int</span><span style="color: #D8DEE9FF"> x </span><span style="color: #81A1C1">=</span><span style="color: #D8DEE9FF"> </span><span style="color: #ECEFF4">&quot;</span><span style="color: #A3BE8C">hello</span><span style="color: #ECEFF4">&quot;</span><span style="color: #81A1C1">;</span><span style="color: #616E88"> // type error</span></span>
+<span class="line"><span style="color: #D8DEE9FF">  std</span><span style="color: #ECEFF4">::</span><span style="color: #D8DEE9FF">cout </span><span style="color: #81A1C1">&lt;&lt;</span><span style="color: #D8DEE9FF"> x </span><span style="color: #81A1C1">&lt;&lt;</span><span style="color: #D8DEE9FF"> std</span><span style="color: #ECEFF4">::</span><span style="color: #D8DEE9FF">endl</span><span style="color: #81A1C1">;</span><span style="color: #616E88"> // ^?</span></span>
+<span class="line"><span style="color: #D8DEE9FF">  </span><span style="color: #81A1C1">return</span><span style="color: #D8DEE9FF"> </span><span style="color: #B48EAD">0</span><span style="color: #81A1C1">;</span></span>
+<span class="line"><span style="color: #ECEFF4">}</span></span></code></pre>
+<div class="cppslash-annotations">
+<div class="cppslash-hovers">
+<div class="cppslash-hover"><strong>Hover (line 6):</strong><pre></pre></div>
+</div>
+<div class="cppslash-diags"><strong>Diagnostics:</strong>
+<ul>
+<li>'iostream' file not found (clang)</li>
+<li>Cannot initialize a variable of type 'int' with an lvalue of type 'const char[6]' (clang)</li>
+<li>Use of undeclared identifier 'std' (clang)</li>
+<li>Use of undeclared identifier 'std' (clang)</li>
+</ul></div>
+</div>
+
+</div>

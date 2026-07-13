@@ -31,7 +31,7 @@ async function main() {
   }
   if (!infile) return usage();
   const code = fs.readFileSync(infile, 'utf8');
-  const result = await render(code, { fileName: path.basename(infile), clangdPath: clangd, theme });
+  const result = await render(code, { fileName: infile, clangdPath: clangd, theme });
   if (outfile) {
     fs.writeFileSync(outfile, result, 'utf8');
     console.log('Wrote', outfile);

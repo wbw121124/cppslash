@@ -30,26 +30,58 @@ export type Diagnostic = {
 
 export class ClangdClient {
   private clangdPath: string;
+  private cwd: string;
   private process?: ChildProcess;
   private connection: ReturnType<typeof createMessageConnection> | null = null;
   private diagnosticsHandlers: Map<string, (uri: string, diagnostics: Diagnostic[]) => void> = new Map();
 
-  constructor(clangdPath = 'clangd') {
+  constructor(clangdPath = 'clangd', cwd = process.cwd()) {
     this.clangdPath = clangdPath;
+    this.cwd = cwd;
   }
 
   async start(rootUri?: string): Promise<InitializeResult> {
     // spawn clangd with extra args so it picks up compile_commands.json and logs stderr
-    this.process = spawn(this.clangdPath, ['--background-index=false', '--compile-commands-dir=.', '--log=verbose'], { stdio: 'pipe' });
+    this.process = spawn(this.clangdPath, ['--background-index=false', '--compile-commands-dir=.', '--log=verbose'], { stdio: 'pipe', cwd: this.cwd });
 
-    if (!this.process.stdout || !this.process.stdin) {
+    if (!this.process.stdout || !this.process.stdin || !this.process.stderr) {
       throw new Error('Failed to spawn clangd with stdio pipes');
     }
 
+    this.process.stderr.on('data', (chunk: Buffer) => {
+      console.error('[clangd]', chunk.toString());
+    });
+    this.process.stdin.on('error', () => {
+      // swallow EPIPE when clangd exits before writes finish
+    });
+    this.process.stdout.on('error', () => {
+      // swallow stream errors from clangd shutdown
+    });
+    this.process.stderr.on('error', () => {
+      // swallow stderr pipe errors as well
+    });
+
     const reader = new StreamMessageReader(this.process.stdout as Readable);
     const writer = new StreamMessageWriter(this.process.stdin as Writable);
+    const originalWriter = writer.write.bind(writer);
+    writer.write = async (msg: any) => {
+      try {
+        return await originalWriter(msg);
+      } catch (error: any) {
+        if (error && (error.code === 'EPIPE' || error.code === 'ERR_STREAM_DESTROYED')) {
+          return;
+        }
+        throw error;
+      }
+    };
 
     this.connection = createMessageConnection(reader, writer, console as any);
+    this.connection.onError((error) => {
+      // ignore broken pipe / write errors when clangd exits unexpectedly
+    });
+    this.connection.onClose(() => {
+      // connection closed by clangd
+    });
     this.connection.listen();
 
     const params: InitializeParams = {
@@ -61,7 +93,7 @@ export class ClangdClient {
 
     const init = await this.connection.sendRequest(InitializeRequest.type, params) as InitializeResult;
     // notify initialized
-    this.connection.sendNotification('initialized', {});
+    await this.connection.sendNotification('initialized', {});
 
     // subscribe diagnostics
     this.connection.onNotification(PublishDiagnosticsNotification.type.method, (params: any) => {
@@ -90,12 +122,12 @@ export class ClangdClient {
       version: 1,
       text
     };
-    this.connection.sendNotification(DidOpenTextDocumentNotification.type, { textDocument: doc });
+    await this.connection.sendNotification(DidOpenTextDocumentNotification.type, { textDocument: doc });
   }
 
   async changeDocument(uri: string, version: number, text: string) {
     if (!this.connection) throw new Error('Not started');
-    this.connection.sendNotification(DidChangeTextDocumentNotification.type, {
+    await this.connection.sendNotification(DidChangeTextDocumentNotification.type, {
       textDocument: { uri, version },
       contentChanges: [{ text }]
     });
@@ -103,7 +135,7 @@ export class ClangdClient {
 
   async closeDocument(uri: string) {
     if (!this.connection) throw new Error('Not started');
-    this.connection.sendNotification(DidCloseTextDocumentNotification.type, { textDocument: { uri } });
+    await this.connection.sendNotification(DidCloseTextDocumentNotification.type, { textDocument: { uri } });
   }
 
   async hover(uri: string, pos: Position) {

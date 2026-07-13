@@ -1,3 +1,5 @@
+import * as fs from 'fs';
+import * as path from 'path';
 import { ClangdClient, Diagnostic } from './lspClient';
 import { getHighlighter, HtmlRendererOptions } from 'shiki';
 
@@ -11,8 +13,20 @@ type RenderOptions = {
 type HoverResult = { line: number; column: number; content: string };
 
 function fileToUri(fileName: string) {
-  if (fileName.startsWith('/')) return 'file://' + fileName;
-  return 'file:///' + fileName;
+  const absPath = path.isAbsolute(fileName) ? fileName : path.resolve(fileName);
+  const normalized = absPath.replace(/\\/g, '/');
+  return normalized.startsWith('/') ? `file://${normalized}` : `file:///${normalized}`;
+}
+
+function findCompileCommandsDir(startDir: string): string | null {
+  let dir = startDir;
+  while (true) {
+    if (fs.existsSync(path.join(dir, 'compile_commands.json'))) return dir;
+    const parent = path.dirname(dir);
+    if (parent === dir) break;
+    dir = parent;
+  }
+  return null;
 }
 
 // 更稳的 marker 解析：把注释前最近的非空白字符位置作为 hover 目标
@@ -35,10 +49,11 @@ function parseHoverMarkers(code: string) {
 
 export async function render(code: string, options: RenderOptions = {}) {
   const { fileName = 'example.cpp', theme = 'nord', clangdPath = 'clangd', timeout = 1500 } = options;
-  const uri = fileToUri('/' + fileName);
-
-  const client = new ClangdClient(clangdPath);
-  await client.start();
+  const absPath = path.isAbsolute(fileName) ? fileName : path.resolve(fileName);
+  const uri = fileToUri(absPath);
+  const compileCommandsDir = findCompileCommandsDir(path.dirname(absPath)) || process.cwd();
+  const client = new ClangdClient(clangdPath, compileCommandsDir);
+  await client.start(fileToUri(compileCommandsDir));
 
   const diagnosticsMap: Map<string, Diagnostic[]> = new Map();
   client.onDiagnostics('main', (u, diagnostics) => {
@@ -114,8 +129,11 @@ export async function render(code: string, options: RenderOptions = {}) {
   }
   annotationsHtml += '</div>\n';
 
-  await client.closeDocument(uri);
-  await client.stop();
+  try {
+    await client.stop();
+  } catch {
+    // ignore stop errors for broken pipes
+  }
 
   // wrap html and annotations
   const final = `<div class="cppslash-wrapper">\n${html}\n${annotationsHtml}\n</div>\n`;
