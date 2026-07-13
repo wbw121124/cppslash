@@ -12,26 +12,22 @@
 <div class="cppslash-hover"><strong>Hover (line 6):</strong><pre>function endl
 provided by &lt;iostream&gt;
 
-→ basic_ostream&lt;_CharT, _Traits&gt; &amp;
+→ basic_ostream&lt;char, char_traits&lt;char&gt;&gt; &amp;
 Parameters:
-- basic_ostream&lt;_CharT, _Traits&gt; &amp; __os
+- basic_ostream&lt;char, char_traits&lt;char&gt;&gt; &amp; __os
 
 // In namespace std
-template &lt;typename _CharT, typename _Traits&gt;
-inline basic_ostream&lt;_CharT, _Traits&gt; &amp;
-endl(basic_ostream&lt;_CharT, _Traits&gt; &amp;__os)</pre></div>
+template &lt;&gt;
+inline basic_ostream&lt;char, char_traits&lt;char&gt;&gt; &amp;
+endl&lt;char, std::char_traits&lt;char&gt;&gt;(basic_ostream&lt;char, char_traits&lt;char&gt;&gt; &amp;__os)</pre></div>
 </div>
 <div class="cppslash-diags"><strong>Diagnostics:</strong>
 <ul>
-<li>In included file: 'wchar.h' file not found
+<li>In included file: __float128 is not supported on this target
 
-C:\Program Files\mingw64\lib\gcc\x86_64-w64-mingw32\8.1.0\include\c++\cwchar:44:10:
+C:\Program Files\mingw64\lib\gcc\x86_64-w64-mingw32\8.1.0\include\c++\type_traits:347:39:
 note: error occurred here (clang)</li>
 <li>Cannot initialize a variable of type 'int' with an lvalue of type 'const char[6]' (clang)</li>
-<li>Reference to overloaded function could not be resolved; did you mean to call it?
-
-C:\Program Files\mingw64\lib\gcc\x86_64-w64-mingw32\8.1.0\include\c++\ostream:590:5:
-note: possible target for call (clang)</li>
 </ul></div>
 </div>
 

@@ -11,7 +11,8 @@
     "build": "tsc",
     "clean": "rm -rf dist",
     "start": "node dist/cli.js",
-    "lint": "echo \"No linter configured\""
+    "lint": "echo \"No linter configured\"",
+    "test": "npm start -- -i example\\example.cpp -o example/out.html"
   },
   "keywords": [
     "shiki",
