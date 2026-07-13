@@ -3,6 +3,8 @@
         "directory": "C:/Users/yl/Downloads/files",
         "arguments": [
             "c:\\Program Files\\mingw64\\bin\\g++.exe",
+            "-target",
+            "x86_64-w64-mingw32",
             "-std=c++17",
             "-I",
             "C:\\Program Files\\mingw64\\include",
